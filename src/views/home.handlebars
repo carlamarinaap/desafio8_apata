@@ -1,0 +1,16 @@
+<h1 class="text-center m-3">Productos</h1>
+<div class="d-flex flex-wrap m-5 justify-content-center" id="productList">
+  {{#each allProducts.payload}}
+    <div class="card m-1 bg-light" style="width: 18rem;">
+      <div class="card-body">
+        <h5 class="card-title">{{this.title}}</h5>
+        <p class="card-text">{{this.description}}</p>
+        <p class="card-text">$ {{this.price}}</p>
+      </div>
+    </div>
+
+  {{/each}}
+
+</div>
+
+<script src="/js/index.js"></script>

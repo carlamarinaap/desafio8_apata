@@ -1,0 +1,37 @@
+<div class="container-fluid bg-light p-3">
+  <div class="container p-3">
+    <h1 class="text-center p-3"> Registrarse</h1>
+    <form id="productForm" method="POST" action="/api/sessions/register">
+      <div class="mb-1 mx-5 d-flex">
+        <label class="form-label mx-3 align-self-center" for="first_name">Nombre</label>
+        <input class="form-control" type="text" name="first_name" id="first_name" />
+      </div>
+      <div class="mb-1 mx-5 d-flex">
+        <label class="form-label mx-3 align-self-center" for="last_name">Apellido</label>
+        <input class="form-control" type="text" name="last_name" id="last_name" />
+      </div>
+      <div class="mb-1 mx-5 d-flex">
+        <label class="form-label mx-3 align-self-center" for="email">Email</label>
+        <input class="form-control" type="text" name="email" id="email" />
+      </div>
+      <div class="mb-1 mx-5 d-flex">
+        <label class="form-label mx-3 align-self-center" for="age">Edad</label>
+        <input class="form-control" type="number" name="age" id="age" />
+      </div>
+      <div class="mb-1 mx-5 d-flex">
+        <label class="form-label mx-3 align-self-center" for="password">Contraseña</label>
+        <input class="form-control" type="password" name="password" id="password" />
+      </div>
+      <div class="mb-1 mx-5 d-flex">
+        <label class="form-label mx-3 align-self-center" for="confirm">Repita Contraseña</label>
+        <input class="form-control" type="password" name="confirm" id="confirm" />
+      </div>
+      <div class="pb-1 mx-5 text-center">
+        <div class="text-danger text-center m-2">{{this.msg}}</div>
+        <button class="btn btn-success" type="submit">Registrarse</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="/js/index.js"></script>

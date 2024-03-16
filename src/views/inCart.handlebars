@@ -1,0 +1,42 @@
+<h1 class="text-center m-3">Productos del Carrito</h1>
+<div class="m-5 " id="productList">
+    <ul class="list-group m-1" >
+  {{#each cartJSON.products}}
+      <li class="list-group-item  bg-light">
+        <div class="d-flex justify-content-between">
+          <div class="d-flex">
+            <h5 class="mx-2">{{this.quantity}} x {{this.product.title}}</h5>
+            <p>Precio por unidad: ${{this.product.price}}</p>
+          </div>
+        <p class="card-text">$ {{this.total}}</p>
+        </div>
+      </li>
+  {{/each}}
+    </ul>
+
+
+</div>
+<div class="text-center mb-5">
+  <button class="btn btn-success">Finalizar Compra</button>
+</div>
+<div class="container d-flex justify-content-center">
+  <div>
+      {{#if products.hasPrevPage}}
+    <a class="nav-link" href={{products.prevLink}}><< Anterior</a>
+  {{else}}
+    <p class="text-body-tertiary"><< Anterior</a>
+  {{/if}}
+  </div>
+<div class="mx-4">
+  {{products.page}}
+</div>
+<div>
+    {{#if products.hasNextPage}}
+    <a class="nav-link text-primary" href={{products.nextLink}}>Siguiente >></a>
+    {{else}}
+    <p class="text-body-tertiary">Siguiente >></a>
+  {{/if}}
+</div>
+</div>
+
+<script src="/js/index.js"></script>

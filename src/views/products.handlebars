@@ -1,0 +1,56 @@
+<div class="containter m-3">
+  <form action="/api/sessions/logout" class="d-flex align-items-center justify-content-between">
+  <h6>Te damos la bienvenida {{#if user.is_admin}}  administrador {{else}} usuario {{/if}} {{user.first_name}} {{user.last_name}}!</h6>
+  <div>
+  <a href="/profile" class="btn btn-success btn-sm" >Mi perfil</a>
+  <button class="btn btn-outline-danger btn-sm" type="submit">Cerrar Sesión</button>
+  </div>
+  </form>
+</div>
+
+<h1 class="text-center m-3">Productos</h1>
+{{#if isValid}}
+<div class="d-flex flex-wrap m-5 justify-content-center" id="productList">
+  {{#each products.payload}}
+    <div class="card m-1 bg-light" style="width: 18rem;">
+      <div class="card-body">
+        <h5 class="card-title">{{this.title}}</h5>
+        <p class="card-text">{{this.description}}</p>
+        <p class="card-text">$ {{this.price}}</p>
+      </div>
+      <div class=" m-2">
+        <button class="btn btn-primary" data-id="{{this.id}}" id="addProductInCart">Agregar al carrito</button>
+      </div>
+    </div>
+  {{/each}}
+
+</div>
+{{#if limit}}
+{{else}}
+<div class="container d-flex justify-content-center">
+  <div>
+      {{#if products.hasPrevPage}}
+    <a class="nav-link text-primary" href={{products.prevLink}}><< Anterior</a>
+  {{else}}
+    <p class="text-body-tertiary"><< Anterior</a>
+  {{/if}}
+  </div>
+<div class="mx-4">
+  {{products.page}}
+</div>
+<div>
+    {{#if products.hasNextPage}}
+    <a class="nav-link text-primary" href={{products.nextLink}}>Siguiente >></a>
+    {{else}}
+    <p class="text-body-tertiary">Siguiente >></a>
+  {{/if}}
+</div>
+</div>
+{{/if}}
+{{else}}
+<p class="text-center">No hay productos para mostrar en página {{page}}</p>
+{{/if}}
+
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/socketUser.js"></script>

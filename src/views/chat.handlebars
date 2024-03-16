@@ -1,0 +1,13 @@
+<div class="container m-3 bg-light">
+  <h1>Chat</h1>
+  <button id="clear" class="btn btn-danger mb-3">Vaciar Chat</button>
+  <div id="chat"></div>
+  <div class="container sticky-bottom p-3 d-flex">
+    <input class="form-control" value="" id="msg" type="text" />
+    <button id="send" class="btn btn-success mx-2">Enviar</button>
+  </div>
+</div>
+
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/socketMessages.js"></script>

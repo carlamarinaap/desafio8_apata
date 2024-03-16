@@ -1,0 +1,58 @@
+<div class="container-fluid bg-light p-3">
+  <div class="container p-3">
+  <h1 class="text-center p-3"> Producto Nuevo </h1>
+  <form id="productForm">
+    <div class="mb-1 mx-5 d-flex">
+      <label class="form-label mx-3 align-self-center" for="title">Título</label>
+      <input class="form-control" type="text" name="title" id="title" />
+    </div>
+    <div class="mb-1 mx-5 d-flex">
+      <label class="form-label mx-3 align-self-center" for="title">Descripción</label>
+      <input class="form-control"
+        type="text"
+        name="description"
+        id="description"
+      />
+    </div >
+    <div class="mb-1 mx-5 d-flex">
+      <label class="form-label mx-3 align-self-center" for="price">Precio</label>
+      <input class="form-control" type="number" name="price" id="price" />
+    </div>
+    <div class="mb-1 mx-5 d-flex">
+      <label class="form-label mx-3 align-self-center" for="code">Código</label>
+      <input class="form-control" type="text" name="code"  id="code" />
+    </div>
+    <div class="mb-1 mx-5 d-flex">
+      <label class="form-label mx-3 align-self-center" for="stock">Stock</label>
+      <input class="form-control" type="number" name="stock" id="stock" />
+    </div>
+    <div class="mb-1 mx-5 d-flex">
+      <label class="form-label mx-3 align-self-center" for="category">Categoría</label>
+      <input class="form-control" type="text" name="category" "Juguetería" id="category" />
+    </div>
+    <div class="text-danger text-center" id="errorBox"></div>
+    <div class="pb-1 mx-5  text-center">
+     <button class="btn btn-success" id="addProd">Agregar</button>
+    </div>
+  </form>
+  </div>
+</div>
+
+<h1 class="text-center m-3">Productos</h1>
+<div class="d-flex flex-wrap m-5 justify-content-center" id="productList">
+  {{#each allProducts.payload}}
+    <div class="card m-1 bg-light" style="width: 18rem;">
+      <div class="card-body">
+        <h5 class="card-title">{{this.title}}</h5>
+        <p class="card-text">{{this.description}}</p>
+        <p class="card-text">$ {{this.price}}</p>
+        <button onclick="deleteProd('{{this.id}}')" class="btn btn-danger">Eliminar</button>
+      </div>
+    </div>
+  {{/each}}
+
+</div>
+
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/socket.js"></script>

@@ -1,0 +1,123 @@
+[
+  {
+    "id": 0,
+    "title": "Manzana",
+    "description": "Este es el primer producto de prueba",
+    "price": 250,
+    "thumbnails": [],
+    "code": "abc123",
+    "stock": 10,
+    "category": "Blah",
+    "status": true
+  },
+  {
+    "id": 1,
+    "title": "Banana",
+    "description": "Este es el segundo producto de prueba",
+    "price": 250,
+    "thumbnails": [],
+    "code": "def456",
+    "stock": 10,
+    "category": "Aglo",
+    "status": true
+  },
+  {
+    "id": 2,
+    "title": "Mesa",
+    "description": "Este es el tercer producto de prueba",
+    "price": 150,
+    "thumbnails": [],
+    "code": "ghi789",
+    "stock": 30,
+    "category": "sss",
+    "status": true
+  },
+  {
+    "id": 3,
+    "title": "Silla",
+    "description": "Este es el cuarto producto de prueba",
+    "price": 400,
+    "thumbnails": [],
+    "code": "jkl123",
+    "stock": 5,
+    "category": "sss",
+    "status": true
+  },
+  {
+    "id": 4,
+    "title": "Reloj",
+    "description": "Este es el quinto producto de prueba",
+    "price": 450,
+    "thumbnails": [],
+    "code": "mno456",
+    "stock": 25,
+    "category": "sss",
+    "status": true
+  },
+  {
+    "id": 5,
+    "title": "Pelota",
+    "description": "Descripcion de la pelota",
+    "price": "4000",
+    "thumbnails": [],
+    "code": "asdk3244",
+    "stock": "30",
+    "category": "Juguetería",
+    "status": true
+  },
+  {
+    "id": 6,
+    "title": "Laptop",
+    "description": "Este es el séptimo producto de prueba",
+    "price": 1500,
+    "thumbnails": [],
+    "code": "stu123",
+    "stock": 25,
+    "category": "sss",
+    "status": true
+  },
+  {
+    "id": 7,
+    "title": "Sillón",
+    "description": "Este es el octavo producto de prueba",
+    "price": 750,
+    "thumbnails": [],
+    "code": "vwx456",
+    "stock": 11,
+    "category": "sss",
+    "status": true
+  },
+  {
+    "id": 8,
+    "title": "Pala",
+    "description": "Este es el noveno producto de prueba",
+    "price": 675,
+    "thumbnails": [],
+    "code": "yzz789",
+    "stock": 25,
+    "category": "sss",
+    "status": true
+  },
+  {
+    "id": 9,
+    "title": "Naranja",
+    "description": "Este es el décimo producto de prueba",
+    "price": 1250,
+    "thumbnails": [],
+    "code": "adg147",
+    "stock": 7,
+    "category": "sss",
+    "status": true
+  },
+  {
+    "id": 10,
+    "title": "Palita",
+    "description": "Descripcion de la palita",
+    "price": "2000",
+    "thumbnails": [],
+    "code": "7654jhgf",
+    "stock": "20",
+    "category": "Juguetería",
+    "status": true
+  }
+]
