@@ -3,17 +3,16 @@ import ProductManager from "../dao/manager_mongo/productManager.js";
 import MessageManager from "../dao/manager_mongo/messageManager.js";
 import CartsManager from "../dao/manager_mongo/cartsManager.js";
 import UserManager from "../dao/manager_mongo/userManager.js";
+import jwt from "jsonwebtoken";
+import { PRIVATE_KEY } from "../config/passport.config.js";
+import userSchema from "../dao/models/user.schema.js";
 
 const router = express.Router();
 const pm = new ProductManager();
 const mm = new MessageManager();
 const cm = new CartsManager();
-const um = new UserManager();
 
 router.get("/", async (req, res) => {
-  // const products = await pm.getProducts();
-  // const allProducts = await pm.getProducts(products.totalDocs);
-  // res.render("home", { allProducts });
   res.redirect("/login");
 });
 
@@ -44,8 +43,10 @@ router.get("/carts/:cid", async (req, res) => {
 });
 
 router.get("/products", async (req, res) => {
-  const user = req.session.user;
-  if (user) {
+  const userId = jwt.verify(req.signedCookies.jwt, PRIVATE_KEY).id;
+  const user = await userSchema.findById(userId);
+  delete user.password;
+  if (req.signedCookies.jwt) {
     let { limit, page, sort, filter } = req.query;
     const products = await pm.getProducts(limit, page, sort, filter);
     page ? page : (page = 1);
@@ -56,11 +57,9 @@ router.get("/products", async (req, res) => {
     products.nextLink = products.hasNextPage
       ? `http://localhost:8080/products?page=${products.nextPage}`
       : null;
-    // res.render("products", { products, limit, page, isValid, user });
     res.render("products", { products, limit, page, isValid, user });
   } else {
     let msg = "Inicie sesión para ver los productos";
-    // res.render("login", { msg });
     res.status(401).render("login", { msg });
   }
 });
@@ -87,17 +86,18 @@ router.get("/login", async (req, res) => {
   if (req.session.user) {
     res.redirect("/products");
   } else {
-    // res.render("login");
     res.render("login");
   }
 });
 
 router.get("/profile", async (req, res) => {
-  if (req.session.user) {
-    res.render("profile", req.session.user);
+  const userId = jwt.verify(req.signedCookies.jwt, PRIVATE_KEY).id;
+  const user = await userSchema.findById(userId);
+  delete user.password;
+  if (req.signedCookies) {
+    res.render("profile", user);
   } else {
     let msg = "Inicie sesión para ver su perfil";
-    // res.render("login", { msg });
     res.status(401).render("login", { msg });
   }
 });

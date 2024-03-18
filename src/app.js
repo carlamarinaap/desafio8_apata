@@ -13,10 +13,9 @@ import Handlebars from "handlebars";
 import { allowInsecurePrototypeAccess } from "@handlebars/allow-prototype-access";
 import { Server } from "socket.io";
 import mongoose from "mongoose";
-import MongoStore from "connect-mongo";
+// import MongoStore from "connect-mongo";
 import session from "express-session";
 import cookieParser from "cookie-parser";
-import passport from "passport";
 
 // Managers
 import ProductManager from "./dao/manager_mongo/productManager.js";
@@ -29,7 +28,7 @@ import routerSession from "./routes/sessions.router.js";
 import routerViews from "./routes/views.router.js";
 
 import __dirname from "./utils.js";
-import initializePassport from "./config/passport.config.js";
+import initializePassport, { PRIVATE_KEY } from "./config/passport.config.js";
 
 const app = express();
 const httpServer = app.listen(8080, () => console.log("Server running in port 8080"));
@@ -37,7 +36,7 @@ const socketServer = new Server(httpServer);
 
 //app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
+app.use(cookieParser(PRIVATE_KEY));
 
 //Database
 mongoose.connect(
@@ -47,17 +46,16 @@ mongoose.connect(
 initializePassport();
 app.use(
   session({
-    store: MongoStore.create({
-      mongoUrl:
-        "mongodb+srv://carlaapata:Facundo1990@cluster0.ppztezy.mongodb.net/ecommerce?retryWrites=true&w=majority",
-      ttl: 150,
-    }),
-    secret: "CMA539714",
+    // store: MongoStore.create({
+    //   mongoUrl:
+    //     "mongodb+srv://carlaapata:Facundo1990@cluster0.ppztezy.mongodb.net/ecommerce?retryWrites=true&w=majority",
+    //   ttl: 150,
+    // }),
+    secret: PRIVATE_KEY,
     resave: true,
     saveUninitialized: true,
   })
 );
-// app.use(passport, initialize());
 
 // Views
 app.use(express.static(__dirname + "/public"));

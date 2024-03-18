@@ -1,10 +1,10 @@
+import { isValidPassword } from "../../utils/crypt.js";
 import UserSchema from "../models/user.schema.js";
 
 class UserManager {
   addUser = async (user) => {
     try {
-      const newUser = await UserSchema.create(user);
-      return newUser;
+      return await new UserSchema(user).save();
     } catch (error) {
       throw new Error(`Error al agregar el usuario: ${error.message}`);
     }
@@ -15,7 +15,12 @@ class UserManager {
   };
 
   getUserByCreds = async (email, password) => {
-    return await UserSchema.findOne({ email, password });
+    let user = await UserSchema.findOne({ email });
+    if (isValidPassword(password, user.password)) {
+      delete user.password;
+      return user;
+    }
+    return null;
   };
 
   updatePassword = async (email, password) => {

@@ -3,6 +3,9 @@ import UserManager from "../dao/manager_mongo/userManager.js";
 import { createHash, isValidPassword } from "../utils/crypt.js";
 import passport from "passport";
 import { requireJwtAuth } from "../config/passport.config.js";
+import jwt from "jsonwebtoken";
+import { PRIVATE_KEY } from "../config/passport.config.js";
+import userSchema from "../dao/models/user.schema.js";
 
 const um = new UserManager();
 const router = express.Router();
@@ -11,7 +14,7 @@ router.post(
   "/register",
   passport.authenticate("register", { failureRedirect: "/failRegister" }),
   async (req, res) => {
-    req.session.user = req.user; // ver ese user de donde lo saco, se supone que el done lo devuelve
+    req.session.user = req.user;
     res.redirect("/products");
   }
 );
@@ -22,14 +25,13 @@ router.post(
   async (req, res) => {
     if (!req.user)
       return res.status(400).send({ status: "error", error: "Invalid Credentials" });
-    req.session.user = {
-      first_name: req.user.user.first_name,
-      last_name: req.user.user.last_name,
-      email: req.user.user.email,
-      age: req.user.user.age,
-      token: req.user.token,
-    };
-    res.redirect("/products");
+    res
+      .cookie("jwt", req.user.token, {
+        signed: true,
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60,
+      })
+      .redirect("/products");
   }
 );
 
@@ -43,11 +45,17 @@ router.post("/passwordRestore", async (req, res) => {
   }
 });
 
-router.get("/logout", async (req, res) => {
-  req.session.destroy((err) => {
-    let msg = "Se cerró la sesión";
-    res.render("login", { msg });
-  });
+// router.get("/logout", async (req, res) => {
+//   req.session.destroy((err) => {
+//     let msg = "Se cerró la sesión";
+//     res.render("login", { msg });
+//   });
+// });
+
+router.get("/logout", (req, res) => {
+  res.clearCookie("jwt");
+  let msg = "Se cerró la sesión";
+  res.render("login", { msg });
 });
 
 router.get(
@@ -64,9 +72,10 @@ router.get(
     res.redirect("/products");
   }
 );
-router.get("/current", requireJwtAuth, (req, res) => {
-  console.log(req);
-  res.json(req.user);
+router.get("/current", async (req, res) => {
+  const userId = jwt.verify(req.signedCookies.jwt, PRIVATE_KEY).id;
+  const user = await userSchema.findById(userId);
+  res.json(user);
 });
 
 export default router;

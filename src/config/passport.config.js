@@ -16,36 +16,42 @@ const userCoderAdmin = {
   email: "adminCoder@coder.com",
   age: 0,
   password: "adminCod3r123",
-  is_admin: true,
+  role: "admin",
 };
-
-const jwtOptions = {
-  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-  secretOrKey: "CMA539714",
-};
-
-const jwtStrategy = new JwtStrategy(jwtOptions, async (payload, done) => {
-  try {
-    const user = await userSchema.findById(payload.sub);
-    if (!user) {
-      return done(null, false);
+export const PRIVATE_KEY = "CMA539714";
+passport.use(
+  "jwt",
+  new JwtStrategy(
+    {
+      jwtFromRequest: (req) => {
+        let token = null;
+        if (req && req.signedCookies) {
+          token = req.signedCookies["jwt"];
+        }
+        return token;
+      },
+      secretOrKey: PRIVATE_KEY,
+    },
+    async (jwt_payload, done) => {
+      try {
+        const user = await userSchema.findById(jwt_payload.sub);
+        if (!user) {
+          return done(null, false);
+        }
+        return done(null, user);
+      } catch (error) {
+        return done(error, false);
+      }
     }
-    return done(null, user);
-  } catch (error) {
-    return done(error, false);
-  }
-});
+  )
+);
 
-passport.use(jwtStrategy);
 export const requireJwtAuth = passport.authenticate("jwt", { session: false });
-const generateToken = (user) => {
-  const token = jwt.sign({ user }, "CMA539714", { expiresIn: "24h" });
+export const generateToken = (user) => {
+  let token = jwt.sign({ id: user._id }, PRIVATE_KEY, { expiresIn: "24h" });
   return token;
 };
 
-// const authToken = (req,res,next)=>{
-//   const authHeaders = req.headers.authorization
-// }
 passport.use(
   "login",
   new Strategy(
@@ -61,9 +67,8 @@ passport.use(
           return done("Contraseña incorrecta", false);
         }
       } else {
-        let user = await um.getUser(username);
-        if (!isValidPassword(password, user.password))
-          return done("Contraseña incorrecta", false);
+        let user = await um.getUserByCreds(username, password);
+        if (!user) return done("Contraseña incorrecta", false);
         const token = generateToken(user);
         return done(null, { user, token });
       }
@@ -71,6 +76,7 @@ passport.use(
   )
 );
 
+passport.use("current", new Strategy(async (req, res, done) => {}));
 const initializePassport = () => {
   passport.use(
     "register",
@@ -99,7 +105,7 @@ const initializePassport = () => {
         };
         await um.addUser(user);
         let addUser = await um.getUser(user.email);
-        return done(null, addUser);
+        return done(null, { user: addUser });
       }
     )
   );
@@ -128,7 +134,7 @@ const initializePassport = () => {
             let result = await userSchema.create(newUser);
             done(null, result);
           } else {
-            done(null, user);
+            done(null, { user });
           }
         } catch (error) {
           return done(error);

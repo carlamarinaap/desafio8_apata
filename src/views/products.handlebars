@@ -1,6 +1,6 @@
 <div class="containter m-3">
   <form action="/api/sessions/logout" class="d-flex align-items-center justify-content-between">
-  <h6>Te damos la bienvenida {{#if user.is_admin}}  administrador {{else}} usuario {{/if}} {{user.first_name}} {{user.last_name}}!</h6>
+  <h6>Te damos la bienvenida  {{user.first_name}} {{user.last_name}}!</h6>
   <div>
   <a href="/profile" class="btn btn-success btn-sm" >Mi perfil</a>
   <button class="btn btn-outline-danger btn-sm" type="submit">Cerrar Sesión</button>
