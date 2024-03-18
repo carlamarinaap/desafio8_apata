@@ -12,6 +12,7 @@
 {{#if isValid}}
 <div class="d-flex flex-wrap m-5 justify-content-center" id="productList">
   {{#each products.payload}}
+  <form action="/api/carts/{{../user.cart}}/products/{{this._id}}" method="POST">
     <div class="card m-1 bg-light" style="width: 18rem;">
       <div class="card-body">
         <h5 class="card-title">{{this.title}}</h5>
@@ -19,9 +20,10 @@
         <p class="card-text">$ {{this.price}}</p>
       </div>
       <div class=" m-2">
-        <button class="btn btn-primary" data-id="{{this.id}}" id="addProductInCart">Agregar al carrito</button>
+        <button class="btn btn-primary" type="submit" id="addProductInCart">Agregar al carrito </button>
       </div>
     </div>
+    </form>
   {{/each}}
 
 </div>
@@ -53,4 +55,4 @@
 
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="/socket.io/socket.io.js"></script>
-<script src="/js/socketUser.js"></script>
+<script src="/js/index.js"></script>

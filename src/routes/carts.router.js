@@ -46,7 +46,7 @@ router.post("/:cid/products/:pid", async (req, res) => {
 router.delete("/:cid", async (req, res) => {
   try {
     const cartId = req.params.cid;
-    const cart = await cm.cleanCartById(cartId);
+    await cm.cleanCartById(cartId);
     res.status(200).send("Se vació el carrito");
   } catch (error) {
     res.status(500).send(error.message);
