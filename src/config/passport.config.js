@@ -4,7 +4,7 @@ import StrategyGitHub from "passport-github2";
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
 import userManager from "../dao/manager_mongo/userManager.js";
 import cartManager from "../dao/manager_mongo/cartsManager.js";
-import { isValidPassword, createHash } from "../utils/crypt.js";
+import { createHash } from "../utils/crypt.js";
 import userSchema from "../dao/models/user.schema.js";
 import jwt from "jsonwebtoken";
 
@@ -70,13 +70,13 @@ passport.use(
         let user = await um.getUserByCreds(username, password);
         if (!user) return done("Contraseña incorrecta", false);
         const token = generateToken(user);
-        return done(null, { user, token });
+        user.token = token;
+        return done(null, user);
       }
     }
   )
 );
 
-passport.use("current", new Strategy(async (req, res, done) => {}));
 const initializePassport = () => {
   passport.use(
     "register",
@@ -105,7 +105,7 @@ const initializePassport = () => {
         };
         await um.addUser(user);
         let addUser = await um.getUser(user.email);
-        return done(null, { user: addUser });
+        return done(null, addUser);
       }
     )
   );
@@ -121,6 +121,8 @@ const initializePassport = () => {
       async (accessToken, refreshToken, profile, done) => {
         try {
           let user = await userSchema.findOne({ email: profile._json.email });
+          const token = generateToken(user);
+          user.token = token;
           if (!user) {
             const newCart = await cm.addCart();
             let newUser = {
@@ -134,7 +136,7 @@ const initializePassport = () => {
             let result = await userSchema.create(newUser);
             done(null, result);
           } else {
-            done(null, { user });
+            done(null, user);
           }
         } catch (error) {
           return done(error);
@@ -146,7 +148,7 @@ const initializePassport = () => {
     if (user.email === "adminCoder@coder.com") {
       done(null, user.email);
     } else {
-      done(null, user.user._id);
+      done(null, user._id);
     }
   });
 

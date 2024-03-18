@@ -43,10 +43,15 @@ router.get("/carts/:cid", async (req, res) => {
 });
 
 router.get("/products", async (req, res) => {
-  const userId = jwt.verify(req.signedCookies.jwt, PRIVATE_KEY).id;
-  const user = await userSchema.findById(userId);
-  delete user.password;
-  if (req.signedCookies.jwt) {
+  let user;
+  if (!req.session.user) {
+    const userId = jwt.verify(req.signedCookies.jwt, PRIVATE_KEY).id;
+    user = await userSchema.findById(userId);
+    delete user.password;
+  } else {
+    user = req.session.user;
+  }
+  if (user) {
     let { limit, page, sort, filter } = req.query;
     const products = await pm.getProducts(limit, page, sort, filter);
     page ? page : (page = 1);
@@ -83,7 +88,7 @@ router.get("/faillogin", async (req, res) => {
 });
 
 router.get("/login", async (req, res) => {
-  if (req.session.user) {
+  if (req.signedCookies) {
     res.redirect("/products");
   } else {
     res.render("login");
@@ -91,9 +96,15 @@ router.get("/login", async (req, res) => {
 });
 
 router.get("/profile", async (req, res) => {
-  const userId = jwt.verify(req.signedCookies.jwt, PRIVATE_KEY).id;
-  const user = await userSchema.findById(userId);
-  delete user.password;
+  let user;
+  if (!req.session.user) {
+    const userId = jwt.verify(req.signedCookies.jwt, PRIVATE_KEY).id;
+    user = await userSchema.findById(userId);
+    delete user.password;
+  } else {
+    user = req.session.user;
+  }
+
   if (req.signedCookies) {
     res.render("profile", user);
   } else {
