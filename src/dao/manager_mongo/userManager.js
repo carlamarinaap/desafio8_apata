@@ -3,8 +3,8 @@ import UserSchema from "../models/user.schema.js";
 class UserManager {
   addUser = async (user) => {
     try {
-      await UserSchema.create(user);
-      return user;
+      const newUser = await UserSchema.create(user);
+      return newUser;
     } catch (error) {
       throw new Error(`Error al agregar el usuario: ${error.message}`);
     }

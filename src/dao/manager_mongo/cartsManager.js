@@ -1,6 +1,5 @@
 /* --------------CAPA DE NEGOCIO---------------- */
 
-import redactPasswords from "sails-postgresql/lib/private/redact-passwords.js";
 import CartSchema from "../models/cart.schema.js";
 import ProductSchema from "../models/product.schema.js";
 

@@ -1,11 +1,15 @@
 import passport from "passport";
 import { Strategy } from "passport-local";
 import StrategyGitHub from "passport-github2";
+import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
 import userManager from "../dao/manager_mongo/userManager.js";
+import cartManager from "../dao/manager_mongo/cartsManager.js";
 import { isValidPassword, createHash } from "../utils/crypt.js";
 import userSchema from "../dao/models/user.schema.js";
+import jwt from "jsonwebtoken";
 
 const um = new userManager();
+const cm = new cartManager();
 const userCoderAdmin = {
   first_name: "Admin",
   last_name: "Coder",
@@ -14,6 +18,59 @@ const userCoderAdmin = {
   password: "adminCod3r123",
   is_admin: true,
 };
+
+const jwtOptions = {
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  secretOrKey: "CMA539714",
+};
+
+const jwtStrategy = new JwtStrategy(jwtOptions, async (payload, done) => {
+  try {
+    const user = await userSchema.findById(payload.sub);
+    if (!user) {
+      return done(null, false);
+    }
+    return done(null, user);
+  } catch (error) {
+    return done(error, false);
+  }
+});
+
+passport.use(jwtStrategy);
+export const requireJwtAuth = passport.authenticate("jwt", { session: false });
+const generateToken = (user) => {
+  const token = jwt.sign({ user }, "CMA539714", { expiresIn: "24h" });
+  return token;
+};
+
+// const authToken = (req,res,next)=>{
+//   const authHeaders = req.headers.authorization
+// }
+passport.use(
+  "login",
+  new Strategy(
+    { usernameField: "email", passwordField: "password" },
+    async (username, password, done) => {
+      if (!username || !password) {
+        return done("Debe completar todos los campos", false);
+      }
+      if (username === userCoderAdmin.email) {
+        if (password === userCoderAdmin.password) {
+          return done(null, userCoderAdmin);
+        } else {
+          return done("Contraseña incorrecta", false);
+        }
+      } else {
+        let user = await um.getUser(username);
+        if (!isValidPassword(password, user.password))
+          return done("Contraseña incorrecta", false);
+        const token = generateToken(user);
+        return done(null, { user, token });
+      }
+    }
+  )
+);
+
 const initializePassport = () => {
   passport.use(
     "register",
@@ -21,7 +78,6 @@ const initializePassport = () => {
       { passReqToCallback: true, usernameField: "email", passwordField: "password" },
       async (req, username, password, done) => {
         let { first_name, last_name, age, confirm } = req.body;
-
         if (!first_name || !last_name || !age || !username || !password) {
           return done("Debe completar todos los campos", false);
         }
@@ -32,43 +88,18 @@ const initializePassport = () => {
         if (emailUsed) {
           return done("Ya existe un usario con este correo electrónico", false);
         }
+        const newCart = await cm.addCart();
         const user = {
           first_name,
           last_name,
           age,
           email: username,
           password: createHash(password),
-          is_admin: false,
+          cart: newCart[0]._id,
         };
         await um.addUser(user);
         let addUser = await um.getUser(user.email);
         return done(null, addUser);
-      }
-    )
-  );
-
-  passport.use(
-    "login",
-    new Strategy(
-      { usernameField: "email", passwordField: "password" },
-      async (username, password, done) => {
-        if (!username || !password) {
-          return done("Debe completar todos los campos", false);
-        }
-        if (username === userCoderAdmin.email) {
-          if (password === userCoderAdmin.password) {
-            return done(null, userCoderAdmin);
-          } else {
-            return done("Contraseña incorrecta", false);
-          }
-        } else {
-          let user = await um.getUser(username);
-          if (isValidPassword(password, user.password)) {
-            return done(null, user);
-          } else {
-            return done("Contraseña incorrecta", false);
-          }
-        }
       }
     )
   );
@@ -83,17 +114,16 @@ const initializePassport = () => {
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
-          console.log(profile);
-
           let user = await userSchema.findOne({ email: profile._json.email });
           if (!user) {
+            const newCart = await cm.addCart();
             let newUser = {
               first_name: profile._json.name,
               last_name: "",
               email: profile._json.email,
               age: "",
               password: "",
-              is_admin: false,
+              cart: newCart[0]._id,
             };
             let result = await userSchema.create(newUser);
             done(null, result);
@@ -110,7 +140,7 @@ const initializePassport = () => {
     if (user.email === "adminCoder@coder.com") {
       done(null, user.email);
     } else {
-      done(null, user._id);
+      done(null, user.user._id);
     }
   });
 

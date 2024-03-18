@@ -2,6 +2,7 @@ import express from "express";
 import UserManager from "../dao/manager_mongo/userManager.js";
 import { createHash, isValidPassword } from "../utils/crypt.js";
 import passport from "passport";
+import { requireJwtAuth } from "../config/passport.config.js";
 
 const um = new UserManager();
 const router = express.Router();
@@ -22,11 +23,11 @@ router.post(
     if (!req.user)
       return res.status(400).send({ status: "error", error: "Invalid Credentials" });
     req.session.user = {
-      first_name: req.user.first_name,
-      last_name: req.user.last_name,
-      email: req.user.email,
-      age: req.user.age,
-      is_admin: req.user.is_admin,
+      first_name: req.user.user.first_name,
+      last_name: req.user.user.last_name,
+      email: req.user.user.email,
+      age: req.user.user.age,
+      token: req.user.token,
     };
     res.redirect("/products");
   }
@@ -63,5 +64,9 @@ router.get(
     res.redirect("/products");
   }
 );
+router.get("/current", requireJwtAuth, (req, res) => {
+  console.log(req);
+  res.json(req.user);
+});
 
 export default router;

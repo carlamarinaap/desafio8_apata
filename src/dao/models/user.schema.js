@@ -18,10 +18,24 @@ const UserSchema = new mongoose.Schema({
   password: {
     type: String,
   },
-  is_admin: {
-    type: Boolean,
-    required: true,
+  role: {
+    type: String,
+    default: "user",
   },
+  cart: {
+    type: mongoose.Schema.ObjectId,
+    ref: "Cart",
+  },
+});
+
+UserSchema.pre("remove", async function (next) {
+  try {
+    const Cart = mongoose.model("Cart");
+    await Cart.deleteOne({ _id: this.cart });
+    next();
+  } catch (error) {
+    next(error);
+  }
 });
 
 export default mongoose.model("Users", UserSchema);
