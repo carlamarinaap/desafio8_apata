@@ -45,17 +45,17 @@ router.post("/passwordRestore", async (req, res) => {
   }
 });
 
-// router.get("/logout", async (req, res) => {
-//   req.session.destroy((err) => {
-//     let msg = "Se cerró la sesión";
-//     res.render("login", { msg });
-//   });
-// });
-
 router.get("/logout", (req, res) => {
-  res.clearCookie("jwt");
-  let msg = "Se cerró la sesión";
-  res.render("login", { msg });
+  if (req.session.user) {
+    req.session.destroy((err) => {
+      let msg = "Se cerró la sesión";
+      res.render("login", { msg });
+    });
+  } else {
+    res.clearCookie("jwt");
+    let msg = "Se cerró la sesión";
+    res.render("login", { msg });
+  }
 });
 
 router.get(
@@ -73,9 +73,18 @@ router.get(
   }
 );
 router.get("/current", async (req, res) => {
-  const userId = jwt.verify(req.signedCookies.jwt, PRIVATE_KEY).id;
-  const user = await userSchema.findById(userId);
-  res.json(user);
+  let user;
+  if (req.signedCookies.jwt) {
+    const userId = jwt.verify(req.signedCookies.jwt, PRIVATE_KEY).id;
+    user = await userSchema.findById(userId);
+  }
+  if (req.session.user) {
+    user = req.session.user;
+  }
+  if (!req.signedCookies.jwt && !req.session.user) {
+    res.status(400).json("Nadie logueado");
+  }
+  res.status(200).json(user);
 });
 
 export default router;

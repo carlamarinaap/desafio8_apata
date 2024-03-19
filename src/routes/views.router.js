@@ -44,7 +44,7 @@ router.get("/carts/:cid", async (req, res) => {
 
 router.get("/products", async (req, res) => {
   let user;
-  if (!req.session.user) {
+  if (req.signedCookies.jwt) {
     const userId = jwt.verify(req.signedCookies.jwt, PRIVATE_KEY).id;
     user = await userSchema.findById(userId);
     delete user.password;
@@ -88,7 +88,7 @@ router.get("/faillogin", async (req, res) => {
 });
 
 router.get("/login", async (req, res) => {
-  if (req.signedCookies) {
+  if (req.signedCookies || req.session.user) {
     res.redirect("/products");
   } else {
     res.render("login");
